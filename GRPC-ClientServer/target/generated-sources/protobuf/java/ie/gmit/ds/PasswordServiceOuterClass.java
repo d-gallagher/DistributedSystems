@@ -39,23 +39,21 @@ public final class PasswordServiceOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n\025PasswordService.proto\022\nie.gmit.ds\032\036goo" +
-      "gle/protobuf/wrappers.proto\032\033google/prot" +
-      "obuf/empty.proto\"/\n\013HashRequest\022\016\n\006userI" +
-      "d\030\001 \001(\005\022\020\n\010password\030\002 \001(\t\"D\n\014HashRespons" +
-      "e\022\016\n\006userId\030\001 \001(\005\022\026\n\016hashedPassword\030\002 \001(" +
-      "\014\022\014\n\004salt\030\003 \001(\014\"K\n\021ValidationRequest\022\020\n\010" +
-      "password\030\001 \001(\t\022\026\n\016hashedPassword\030\002 \001(\014\022\014" +
-      "\n\004salt\030\003 \001(\0142\223\001\n\017PasswordService\0229\n\004hash" +
-      "\022\027.ie.gmit.ds.HashRequest\032\030.ie.gmit.ds.H" +
-      "ashResponse\022E\n\010validate\022\035.ie.gmit.ds.Val" +
-      "idationRequest\032\032.google.protobuf.BoolVal" +
-      "ueB\016\n\nie.gmit.dsP\001b\006proto3"
+      "gle/protobuf/wrappers.proto\"/\n\013HashReque" +
+      "st\022\016\n\006userId\030\001 \001(\005\022\020\n\010password\030\002 \001(\t\"D\n\014" +
+      "HashResponse\022\016\n\006userId\030\001 \001(\005\022\026\n\016hashedPa" +
+      "ssword\030\002 \001(\014\022\014\n\004salt\030\003 \001(\014\"K\n\021Validation" +
+      "Request\022\020\n\010password\030\001 \001(\t\022\026\n\016hashedPassw" +
+      "ord\030\002 \001(\014\022\014\n\004salt\030\003 \001(\0142\223\001\n\017PasswordServ" +
+      "ice\0229\n\004hash\022\027.ie.gmit.ds.HashRequest\032\030.i" +
+      "e.gmit.ds.HashResponse\022E\n\010validate\022\035.ie." +
+      "gmit.ds.ValidationRequest\032\032.google.proto" +
+      "buf.BoolValueB\016\n\nie.gmit.dsP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.google.protobuf.WrappersProto.getDescriptor(),
-          com.google.protobuf.EmptyProto.getDescriptor(),
         });
     internal_static_ie_gmit_ds_HashRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -76,7 +74,6 @@ public final class PasswordServiceOuterClass {
         internal_static_ie_gmit_ds_ValidationRequest_descriptor,
         new java.lang.String[] { "Password", "HashedPassword", "Salt", });
     com.google.protobuf.WrappersProto.getDescriptor();
-    com.google.protobuf.EmptyProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)
