@@ -2,6 +2,8 @@ package ie.gmit.ds;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -22,10 +24,22 @@ public class UserAccountApiResource {
     public Collection<UserAccount> getUsers() {
         return userAccounts.values();
     }
+
     @GET
     @Path("{userID}")
-    public UserAccount getUserById(@PathParam("userID") Integer userID) {
+    public UserAccount getUserById(@PathParam("userID") int userID) {
         return userAccounts.get(userID);
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response postArtist(UserAccount acc){
+
+        if(userAccounts.get(acc.userID) == null){
+            userAccounts.put(acc.userID, acc);
+        }
+
+        return Response.status(Response.status.OK).build();
+        // return;
+    }
 }
