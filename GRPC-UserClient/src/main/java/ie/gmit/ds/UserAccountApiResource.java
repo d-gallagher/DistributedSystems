@@ -35,14 +35,29 @@ public class UserAccountApiResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response postArtist(UserAccount acc){
+    public Response addUserAccount(UserAccount acc){
 
         // if(userAccounts.get(acc.userID) == null){
             userAccounts.put(acc.userID, acc);
         // }
-        String entity = "Artist Created. ";
+        
 
-        return Response.status(Status.CREATED).type(MediaType.TEXT_PLAIN).entity(entity).build();
+        return Response.status(Status.CREATED).type(MediaType.TEXT_PLAIN).entity("UserAccount Created for "+acc.getUserName()+".").build();
+        
+    }
+
+    @DELETE
+    @Path("delete")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteUserAccount(UserAccount acc){
+
+        
+        // if(userAccounts.get(acc.userID) != null){
+            userAccounts.remove(acc.getUserID());
+        // }
+        
+
+        return Response.status(Status.ACCEPTED).type(MediaType.TEXT_PLAIN).entity("User "+acc.getUserID()+" Removed").build();
         
     }
 }
