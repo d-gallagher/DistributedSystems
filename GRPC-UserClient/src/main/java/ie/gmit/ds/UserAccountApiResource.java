@@ -3,12 +3,14 @@ package ie.gmit.ds;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import java.util.Collection;
 import java.util.HashMap;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserAccountApiResource {
 
     private HashMap<Integer, UserAccount> userAccounts = new HashMap<Integer, UserAccount>();
@@ -35,11 +37,12 @@ public class UserAccountApiResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postArtist(UserAccount acc){
 
-        if(userAccounts.get(acc.userID) == null){
+        // if(userAccounts.get(acc.userID) == null){
             userAccounts.put(acc.userID, acc);
-        }
+        // }
+        String entity = "Artist Created. ";
 
-        return Response.status(Response.status.OK).build();
-        // return;
+        return Response.status(Status.CREATED).type(MediaType.TEXT_PLAIN).entity(entity).build();
+        
     }
 }
