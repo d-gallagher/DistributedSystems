@@ -1,0 +1,38 @@
+syntax = "proto3";
+package ie.gmit.ds;
+import "google/protobuf/wrappers.proto";
+//import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "ie.gmit.ds";
+
+/*
+    Requirements from Assignment specs:
+    Password Service will provide the password hashing and verification services
+    -> Expose methods to request hash and receive response, and validate hash matching
+    Adapted from async lab:
+    https://github.com/john-french/distributed-systems-labs/tree/master/grpc-async-inventory
+*/
+
+service PasswordService {
+    // Handle hashing Client/Server request/response
+    rpc hash(HashRequest) returns (HashResponse);
+    // Handle pw validation Client/Server request/response
+    rpc validate(ValidationRequest) returns (google.protobuf.BoolValue);
+}
+
+message HashRequest {
+    int32 userId = 1;
+    string password = 2;
+}
+message HashResponse{
+    int32 userId = 1;
+    bytes hashedPassword = 2;
+    bytes salt = 3;
+}
+message ValidationRequest {
+    string password = 1;
+    bytes hashedPassword = 2;
+    bytes salt = 3;
+}
+
