@@ -10,6 +10,7 @@ public class UserAccount {
     String password;
 
     public UserAccount(){}
+    
     public UserAccount(int userID, String userName, String email, String password) {
         this.userID = userID;
         this.userName = userName;

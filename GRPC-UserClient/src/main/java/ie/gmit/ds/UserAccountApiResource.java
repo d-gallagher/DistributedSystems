@@ -60,4 +60,23 @@ public class UserAccountApiResource {
         return Response.status(Status.ACCEPTED).type(MediaType.TEXT_PLAIN).entity("User "+acc.getUserID()+" Removed").build();
         
     }
+
+    @PUT
+    @Path("update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateUserAccount(UserAccount acc){
+
+        String err;
+
+        if(userAccounts.containsKey(acc.userID)){
+            err = "Updated User Details";
+        }
+        else{
+            err = "Unable to complete update";
+        }
+        
+
+        return Response.status(Status.ACCEPTED).type(MediaType.TEXT_PLAIN).entity(err).build();
+        
+    }
 }
