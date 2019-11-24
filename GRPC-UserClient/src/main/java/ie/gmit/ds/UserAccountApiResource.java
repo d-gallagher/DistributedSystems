@@ -5,6 +5,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import java.io.Console;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -37,6 +38,9 @@ public class UserAccountApiResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUserAccount(UserAccount acc){
 
+        UserClient client  = UserClient.getInstance();
+        HashResult result = client.sendHashRequest(acc.getUserID(), acc.getPassword());
+        System.out.println(result.getHashedPw());
         // if(userAccounts.get(acc.userID) == null){
             userAccounts.put(acc.userID, acc);
         // }

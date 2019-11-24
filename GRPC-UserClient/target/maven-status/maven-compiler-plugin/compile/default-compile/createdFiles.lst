@@ -11,6 +11,7 @@ ie/gmit/ds/PasswordServiceGrpc$PasswordServiceStub.class
 ie/gmit/ds/PasswordServiceGrpc$MethodHandlers.class
 ie/gmit/ds/ValidationRequest.class
 ie/gmit/ds/HashResponse.class
+ie/gmit/ds/UserClient$1.class
 ie/gmit/ds/PasswordServiceGrpc.class
 ie/gmit/ds/HashResponse$Builder.class
 ie/gmit/ds/PasswordServiceGrpc$PasswordServiceBlockingStub.class
