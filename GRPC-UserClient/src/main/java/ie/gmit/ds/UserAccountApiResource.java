@@ -14,73 +14,117 @@ import java.util.HashMap;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserAccountApiResource {
 
-    private HashMap<Integer, UserAccount> userAccounts = new HashMap<Integer, UserAccount>();
+    private final UserClient client;
+
+    private final UserAccountDB userAccounts;
 
     public UserAccountApiResource(){
-        UserAccount testUser1 = new UserAccount(01, "qwe", "qwe@qwe.com", "qwe");
-        UserAccount testUser2 = new UserAccount(02, "asd", "asd@asd.com", "asd");
-        userAccounts.put(testUser1.userID, testUser1);
-        userAccounts.put(testUser2.userID, testUser2);
+        userAccounts = UserAccountDB.getInstance();
+        client  = UserClient.getInstance();
+        // Add some test users to the database
+        populateDB();
+    }
+
+    @POST
+    @Path("login")
+    @Consumes( MediaType.APPLICATION_JSON)
+    public Response loginUser(UserAccount acc) {
+
+        UserAccount login = userAccounts.getUserById(acc.getUserID());
+
+        if (login == null) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error! Please Try Again...").build();
+        }
+
+        //String userPassword, byte[] hashedPassword, byte[] salt
+//        HashResult result = login.getHashResult();
+//        boolean userLogIn = client.validate(acc.getPassword(), result.getHashedPw(), result.getSalt());
+
+//        if(userLogIn){
+//            return Response.status(Status.ACCEPTED).entity("Login Successful. " + login.getUserName())
+//                    .build();
+//        }else{
+        return  Response.status(Status.BAD_REQUEST).entity("Login Error.. Incorrect data. ").build();
+//        }
     }
 
     @GET
     public Collection<UserAccount> getUsers() {
-        return userAccounts.values();
-    }
-
-    @GET
-    @Path("{userID}")
-    public UserAccount getUserById(@PathParam("userID") int userID) {
-        return userAccounts.get(userID);
+        return userAccounts.getUsers();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUserAccount(UserAccount acc){
 
-        UserClient client  = UserClient.getInstance();
-        HashResult result = client.sendHashRequest(acc.getUserID(), acc.getPassword());
-        System.out.println(result.getHashedPw());
-        // if(userAccounts.get(acc.userID) == null){
-            userAccounts.put(acc.userID, acc);
-        // }
-        
+        // Perform createUser
+        userAccounts.addNewUser(setHashes(acc));
 
         return Response.status(Status.CREATED).type(MediaType.TEXT_PLAIN).entity("UserAccount Created for "+acc.getUserName()+".").build();
         
     }
 
-    @DELETE
-    @Path("delete")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUserAccount(UserAccount acc){
-
-        
-        // if(userAccounts.get(acc.userID) != null){
-            userAccounts.remove(acc.getUserID());
-        // }
-        
-
-        return Response.status(Status.ACCEPTED).type(MediaType.TEXT_PLAIN).entity("User "+acc.getUserID()+" Removed").build();
-        
+    @GET
+    @Path("{id}")
+    public UserAccount getUserById(@PathParam("id") int id) {
+        return userAccounts.getUserById(id);
     }
 
     @PUT
-    @Path("update")
+    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateUserAccount(UserAccount acc){
+    public Response updateUserAccount(@PathParam("id") int id, UserAccount acc){
 
-        String err;
+        UserAccount accToUpdate = userAccounts.getUserById(id);
+        // Found the Account
+        if(accToUpdate != null){
+            // Update user password if they send one
+            if(acc.getPassword() != null){
+                acc = setHashes(acc);
+            }
+            userAccounts.updateUserAccount(id, acc);
 
-        if(userAccounts.containsKey(acc.userID)){
-            err = "Updated User Details";
+            // RETURN 200 - User found and deleted
+            return Response.ok().build();
         }
-        else{
-            err = "Unable to complete update";
-        }
-        
 
-        return Response.status(Status.ACCEPTED).type(MediaType.TEXT_PLAIN).entity(err).build();
+        // RETURN 404 - No User Found
+        return Response.status(Status.NOT_FOUND).build();
+
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteUserAccount(@PathParam("id") int id){
+
+        UserAccount accToDelete = userAccounts.getUserById(id);
+        if(accToDelete!=null){
+            userAccounts.deleteUserAccountById(id);
+
+            // RETURN 200 - User found and deleted
+            return Response.ok().build();
+        }
+
+        // RETURN 404 - No User Found
+        return Response.status(Status.NOT_FOUND).build();
         
+    }
+
+    // Set userAccount hash for PW/Salt
+    private UserAccount setHashes(UserAccount acc){
+        // Create New Hash for the user PW/Salt
+        HashResult result = client.sendHashRequest(acc.getUserID(), acc.getPassword());
+        // Set Hash and Salt on user account
+        acc.hashedPassword = result.getHashedPw();
+        acc.salt = result.getSalt();
+
+        return acc;
+    }
+
+    private void populateDB(){
+        userAccounts.addNewUser(setHashes(new UserAccount(01, "qwe", "qwe@qwe.com", "qwe")));
+        userAccounts.addNewUser(setHashes(new UserAccount(02, "asd", "asd@asd.com", "asd")));
     }
 }
