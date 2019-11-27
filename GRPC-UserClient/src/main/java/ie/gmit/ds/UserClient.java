@@ -50,52 +50,28 @@ public class UserClient{
     private ByteString salt;
     private int userId;
 
-
-    // public UserClient(String host, int port) {
-    //     channel = ManagedChannelBuilder
-    //             .forAddress(host, port)
-    //             .usePlaintext()
-    //             .build();
-    //     syncPasswordService = PasswordServiceGrpc.newBlockingStub(channel);
-    //     asyncPasswordService = PasswordServiceGrpc.newStub(channel);
-    // }
-
     public void shutdown() throws InterruptedException {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     }
 
-    // public void getUserInput(){
-    //     System.out.println("Enter ID:");
-    //     userId = userInput.nextInt();
-    //     System.out.println("Enter Password:");
-    //     userPassword = userInput.next();
-    // }
-
     public HashResult sendHashRequest(int userId, String userPassword){
-        // getUserInput();
 
         // Build HashRequest
-        System.out.println("Sending Hash Req");
         HashRequest hashRequest = HashRequest.newBuilder().setUserId(userId)
                                     .setPassword(userPassword).build();
         // HashResponse
         HashResponse hashResponse;
 
-        // try {
-            hashResponse = syncPasswordService.hash(hashRequest);
-            hashedPassword = hashResponse.getHashedPassword();
-            salt = hashResponse.getSalt();
-        // }catch (StatusRuntimeException ex){
-            // logger.log(Level.WARNING, "RPC failed: {0}", ex.getStatus());
-            return new HashResult(hashedPassword.toByteArray(), salt.toByteArray());
-        // }
+        hashResponse = syncPasswordService.hash(hashRequest);
+        hashedPassword = hashResponse.getHashedPassword();
+        salt = hashResponse.getSalt();
+        return new HashResult(hashedPassword.toByteArray(), salt.toByteArray());
     }
 
     public boolean validate(String userPassword, byte[] hashedPassword, byte[] salt){
         return syncPasswordService.validate(ValidationRequest.newBuilder().setPassword(userPassword)
                     .setHashedPassword(ByteString.copyFrom(hashedPassword) )
                     .setSalt(ByteString.copyFrom(salt)).build()).getValue();
-           
     }
 
     public void sendValidationRequest(){
@@ -130,18 +106,4 @@ public class UserClient{
         }
     }
 
-//     public static void main(String[] args) throws Exception {
-//         UserClient Userclient = new UserClient("localhost", 50551);
-//         try {
-//             Userclient.sendHashRequest();
-//             Userclient.sendValidationRequest();
-// //            System.out.println("PW: "+ Userclient.userPassword + "\nPWhash: "
-// //                    +Userclient.hashedPassword.toByteArray().toString()
-// //                    + "\nPWsalt: "+Userclient.salt.toByteArray().toString());
-
-//         } finally {
-//             // Don't stop process, keep alive to receive async response
-//             Thread.currentThread().join();
-//         }
-//     }
 }

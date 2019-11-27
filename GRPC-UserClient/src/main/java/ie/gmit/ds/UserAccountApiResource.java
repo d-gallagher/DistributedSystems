@@ -16,10 +16,10 @@ public class UserAccountApiResource {
 
     private final UserClient client;
 
-    private final UserAccountDB userAccounts;
+    private final UserAccountDB userAccountsDB;
 
     public UserAccountApiResource(){
-        userAccounts = UserAccountDB.getInstance();
+        userAccountsDB = UserAccountDB.getInstance();
         client  = UserClient.getInstance();
         // Add some test users to the database
         populateDB();
@@ -27,31 +27,42 @@ public class UserAccountApiResource {
 
     @POST
     @Path("login")
-    @Consumes( MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response loginUser(UserAccount acc) {
-
-        UserAccount login = userAccounts.getUserById(acc.getUserID());
-
-        if (login == null) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
+        // Confirm if User Exists in DB - Not Found Error if false
+        int providedID = acc.getUserID();
+        if(userAccountsDB.getUserById(providedID) == null){
+            return Response.status(Status.NOT_FOUND)
                     .entity("Error! Please Try Again...").build();
         }
 
-        //String userPassword, byte[] hashedPassword, byte[] salt
-//        HashResult result = login.getHashResult();
-//        boolean userLogIn = client.validate(acc.getPassword(), result.getHashedPw(), result.getSalt());
+        // Password passed in from the POST
+        String providedPW = acc.getPassword();
+        // Get User from the DB
+        UserAccount userLogin = userAccountsDB.getUserById(providedID);
 
-//        if(userLogIn){
-//            return Response.status(Status.ACCEPTED).entity("Login Successful. " + login.getUserName())
-//                    .build();
-//        }else{
-        return  Response.status(Status.BAD_REQUEST).entity("Login Error.. Incorrect data. ").build();
-//        }
+        // Found the User - Validate User
+        System.out.println("Account "+userLogin.getUserName()+" found");
+        System.out.println("Validating.. ");
+
+        // Validate provided user pw against the user from teh DB
+        // Validate method params(String userPassword(from POST), byte[] hashedPassword(From DB), byte[] salt(From DB))
+        boolean validLogin = client.validate(providedPW, userLogin.getHashedPassword(), userLogin.getSalt());
+        System.out.println("Validate "+validLogin);
+
+        // Successful log in
+        if(validLogin){
+            return Response.status(Status.OK).entity("Log in Successful").build();
+        }
+        // Unsuccessful login
+        else{
+            return  Response.status(Status.BAD_REQUEST).entity("Login Error.. Incorrect data. ").build();
+        }
     }
 
     @GET
     public Collection<UserAccount> getUsers() {
-        return userAccounts.getUsers();
+        return userAccountsDB.getUsers();
     }
 
     @POST
@@ -59,7 +70,7 @@ public class UserAccountApiResource {
     public Response addUserAccount(UserAccount acc){
 
         // Perform createUser
-        userAccounts.addNewUser(setHashes(acc));
+        userAccountsDB.addNewUser(setHashes(acc));
 
         return Response.status(Status.CREATED).type(MediaType.TEXT_PLAIN).entity("UserAccount Created for "+acc.getUserName()+".").build();
         
@@ -68,7 +79,7 @@ public class UserAccountApiResource {
     @GET
     @Path("{id}")
     public UserAccount getUserById(@PathParam("id") int id) {
-        return userAccounts.getUserById(id);
+        return userAccountsDB.getUserById(id);
     }
 
     @PUT
@@ -76,14 +87,14 @@ public class UserAccountApiResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateUserAccount(@PathParam("id") int id, UserAccount acc){
 
-        UserAccount accToUpdate = userAccounts.getUserById(id);
+        UserAccount accToUpdate = userAccountsDB.getUserById(id);
         // Found the Account
         if(accToUpdate != null){
             // Update user password if they send one
             if(acc.getPassword() != null){
                 acc = setHashes(acc);
             }
-            userAccounts.updateUserAccount(id, acc);
+            userAccountsDB.updateUserAccount(id, acc);
 
             // RETURN 200 - User found and deleted
             return Response.ok().build();
@@ -99,9 +110,9 @@ public class UserAccountApiResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteUserAccount(@PathParam("id") int id){
 
-        UserAccount accToDelete = userAccounts.getUserById(id);
+        UserAccount accToDelete = userAccountsDB.getUserById(id);
         if(accToDelete!=null){
-            userAccounts.deleteUserAccountById(id);
+            userAccountsDB.deleteUserAccountById(id);
 
             // RETURN 200 - User found and deleted
             return Response.ok().build();
@@ -124,7 +135,7 @@ public class UserAccountApiResource {
     }
 
     private void populateDB(){
-        userAccounts.addNewUser(setHashes(new UserAccount(01, "qwe", "qwe@qwe.com", "qwe")));
-        userAccounts.addNewUser(setHashes(new UserAccount(02, "asd", "asd@asd.com", "asd")));
+        userAccountsDB.addNewUser(setHashes(new UserAccount(01, "qwe", "qwe@qwe.com", "qwe")));
+        userAccountsDB.addNewUser(setHashes(new UserAccount(02, "asd", "asd@asd.com", "asd")));
     }
 }

@@ -28,6 +28,10 @@ public class UserAccountDB {
         return userAccDB.get(userID);
     }
 
+    public boolean confirmUserById(int id) {return userAccDB.containsKey(id);}
+
+    public UserAccount getUserByEmail(String email) {return userAccDB.get(email);}
+
     public void deleteUserAccount(UserAccount acc){ userAccDB.remove(acc.getUserID());}
 
     public void deleteUserAccountById(int accId){ userAccDB.remove(accId);}

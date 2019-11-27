@@ -31,6 +31,12 @@ public class UserAccount {
         this.password = password;
     }
 
+    // login user
+    public UserAccount(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     @JsonProperty
     public int getUserID() {
         return userID;
@@ -47,7 +53,7 @@ public class UserAccount {
     }
 
     @JsonProperty
-//    @JsonIgnore
+//    @JsonIgnore //Ignore causes issues with parsing the json
     public String getPassword() {
         return password;
     }
